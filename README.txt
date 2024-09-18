@@ -1,5 +1,6 @@
 === Menu du Jour ===
 Contributors: Florian Gay
+Short Description: Display daily menus from the GoLunch API for WordPress.
 Tags: menu, restaurant, daily menu, shortcode, golunch
 Requires at least: 4.6
 Tested up to: 6.6
@@ -7,6 +8,8 @@ Requires PHP: 5.6
 Stable tag: 1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+Display daily menus from the GoLunch API for WordPress.
 
 == Description ==
 
@@ -68,12 +71,6 @@ Currently, the plugin supports displaying menus for one restaurant at a time. Yo
 
 1. **Plugin Settings Page:** Configure your preferences easily.
    - assets/screenshot-1.png
-
-2. **Elegant Style Display:** A clean and modern look.
-   - assets/screenshot-2.png
-
-3. **Rustic Style Display:** For a more traditional feel.
-   - assets/screenshot-3.png
 
 == Changelog ==
 

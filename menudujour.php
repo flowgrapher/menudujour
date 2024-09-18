@@ -101,8 +101,8 @@ class MDJ_Menu_Du_Jour {
 
         foreach ($menus as $menu) {
             $menu_date = strtotime($menu['date_start']);
-            $week_start = date('Y-m-d', strtotime('monday this week', $menu_date));
-            $week_end = date('Y-m-d', strtotime('sunday this week', $menu_date));
+            $week_start = gmdate('Y-m-d', strtotime('monday this week', $menu_date));
+            $week_end = gmdate('Y-m-d', strtotime('sunday this week', $menu_date));
 
             if ($week_start !== $current_week_start) {
                 // Nouvelle semaine, fermer le div précédent si nécessaire
@@ -114,7 +114,8 @@ class MDJ_Menu_Du_Jour {
 
                 $output .= '<div class="golunch-week">';
                 if ($atts['show_title'] === 'yes') {
-                    $output .= '<h2>' . sprintf(__('Menus du %s au %s', 'menudujour'), date_i18n($date_format, strtotime($week_start)), date_i18n($date_format, strtotime($week_end))) . '</h2>';
+                    // translators: %1$s: start date, %2$s: end date
+                    $output .= '<h2>' . sprintf(__('Menus du %1$s au %2$s', 'menudujour'), date_i18n($date_format, strtotime($week_start)), date_i18n($date_format, strtotime($week_end))) . '</h2>';
                 }
             }
 
@@ -152,7 +153,7 @@ class MDJ_Menu_Du_Jour {
             return;
         }
 
-        wp_enqueue_script('mdj-admin-script', plugins_url('js/mdj-admin-script.js', __FILE__), array('jquery'), null, true);
+        wp_enqueue_script('mdj-admin-script', plugins_url('js/mdj-admin-script.js', __FILE__), array('jquery'), '1.0', true);
 
         // Passer l'URL de base du plugin à JavaScript
         wp_localize_script('mdj-admin-script', 'mdj_ajax_object', array(
@@ -161,73 +162,78 @@ class MDJ_Menu_Du_Jour {
     }
 
     public function enqueue_styles() {
-        $style_choice = get_option('mdj_style_choice', 'elegant');
-        switch ($style_choice) {
-            case 'elegant':
-                wp_enqueue_style('golunch-elegant-styles', plugins_url('styles/golunch-elegant-styles.css', __FILE__));
-                break;
-            case 'modern':
-                wp_enqueue_style('golunch-modern-styles', plugins_url('styles/golunch-modern-styles.css', __FILE__));
-                break;
-            case 'rustic':
-                wp_enqueue_style('golunch-rustic-styles', plugins_url('styles/golunch-rustic-styles.css', __FILE__));
-                break;
-            case 'minimalist':
-                wp_enqueue_style('golunch-minimalist-styles', plugins_url('styles/golunch-minimalist-styles.css', __FILE__));
-                break;
-            case 'interactive':
-                wp_enqueue_style('golunch-interactive-styles', plugins_url('styles/golunch-interactive-styles.css', __FILE__));
-                wp_enqueue_script('golunch-interactive-script', plugins_url('js/golunch-interactive-script.js', __FILE__), array('jquery'), null, true);
-                break;
-            case 'dark':
-                wp_enqueue_style('golunch-dark-styles', plugins_url('styles/golunch-dark-styles.css', __FILE__));
-                break;
-            case 'colorful':
-                wp_enqueue_style('golunch-colorful-styles', plugins_url('styles/golunch-colorful-styles.css', __FILE__));
-                break;
-            case 'minimalist-pro':
-                wp_enqueue_style('golunch-minimalist-pro-styles', plugins_url('styles/golunch-minimalist-pro-styles.css', __FILE__));
-                break;
-            case 'retro':
-                wp_enqueue_style('golunch-retro-styles', plugins_url('styles/golunch-retro-styles.css', __FILE__));
-                break;
-            case 'futuristic':
-                wp_enqueue_style('golunch-futuristic-styles', plugins_url('styles/golunch-futuristic-styles.css', __FILE__));
-                break;
-            case 'accordion':
-                wp_enqueue_style('golunch-accordion-styles', plugins_url('styles/golunch-accordion-styles.css', __FILE__));
-                wp_enqueue_script('golunch-accordion-script', plugins_url('js/golunch-accordion-script.js', __FILE__), array('jquery'), null, true);
-                break;
-            case 'carousel':
-                wp_enqueue_style('golunch-carousel-styles', plugins_url('styles/golunch-carousel-styles.css', __FILE__));
-                wp_enqueue_script('golunch-carousel-script', plugins_url('js/golunch-carousel-script.js', __FILE__), array('jquery'), null, true);
-                break;
-            case 'fadein':
-                wp_enqueue_style('golunch-fadein-styles', plugins_url('styles/golunch-fadein-styles.css', __FILE__));
-                wp_enqueue_script('golunch-fadein-script', plugins_url('js/golunch-fadein-script.js', __FILE__), array('jquery'), null, true);
-                break;
-            case 'vintage':
-                wp_enqueue_style('golunch-vintage-styles', plugins_url('styles/golunch-vintage-styles.css', __FILE__));
-                break;
-            case 'neon':
-                wp_enqueue_style('golunch-neon-styles', plugins_url('styles/golunch-neon-styles.css', __FILE__));
-                break;
-            case 'pastel':
-                wp_enqueue_style('golunch-pastel-styles', plugins_url('styles/golunch-pastel-styles.css', __FILE__));
-                break;
-            case 'chalkboard':
-                wp_enqueue_style('golunch-chalkboard-styles', plugins_url('styles/golunch-chalkboard-styles.css', __FILE__));
-                break;
-            case 'bistro':
-                wp_enqueue_style('golunch-bistro-styles', plugins_url('styles/golunch-bistro-styles.css', __FILE__));
-                break;
-            case 'seasonal':
-                wp_enqueue_style('golunch-seasonal-styles', plugins_url('styles/golunch-seasonal-styles.css', __FILE__));
-                wp_enqueue_script('golunch-seasonal-script', plugins_url('js/golunch-seasonal-script.js', __FILE__), array('jquery'), null, true);
-                break;
-            default:
-                wp_enqueue_style('golunch-styles', plugins_url('styles/golunch-styles.css', __FILE__));
-                break;
+        global $post;
+        
+        // Vérifiez si nous sommes sur une page ou un article
+        if (is_singular() && has_shortcode($post->post_content, 'golunch_menus')) {
+            $style_choice = get_option('mdj_style_choice', 'elegant');
+            switch ($style_choice) {
+                case 'elegant':
+                    wp_enqueue_style('golunch-elegant-styles', plugins_url('styles/golunch-elegant-styles.css', __FILE__), array(), '1.0');
+                    break;
+                case 'modern':
+                    wp_enqueue_style('golunch-modern-styles', plugins_url('styles/golunch-modern-styles.css', __FILE__), array(), '1.0');
+                    break;
+                case 'rustic':
+                    wp_enqueue_style('golunch-rustic-styles', plugins_url('styles/golunch-rustic-styles.css', __FILE__), array(), '1.0');
+                    break;
+                case 'minimalist':
+                    wp_enqueue_style('golunch-minimalist-styles', plugins_url('styles/golunch-minimalist-styles.css', __FILE__), array(), '1.0');
+                    break;
+                case 'interactive':
+                    wp_enqueue_style('golunch-interactive-styles', plugins_url('styles/golunch-interactive-styles.css', __FILE__), array(), '1.0');
+                    wp_enqueue_script('golunch-interactive-script', plugins_url('js/golunch-interactive-script.js', __FILE__), array('jquery'), '1.0', true);
+                    break;
+                case 'dark':
+                    wp_enqueue_style('golunch-dark-styles', plugins_url('styles/golunch-dark-styles.css', __FILE__), array(), '1.0');
+                    break;
+                case 'colorful':
+                    wp_enqueue_style('golunch-colorful-styles', plugins_url('styles/golunch-colorful-styles.css', __FILE__), array(), '1.0');
+                    break;
+                case 'minimalist-pro':
+                    wp_enqueue_style('golunch-minimalist-pro-styles', plugins_url('styles/golunch-minimalist-pro-styles.css', __FILE__), array(), '1.0');
+                    break;
+                case 'retro':
+                    wp_enqueue_style('golunch-retro-styles', plugins_url('styles/golunch-retro-styles.css', __FILE__), array(), '1.0');
+                    break;
+                case 'futuristic':
+                    wp_enqueue_style('golunch-futuristic-styles', plugins_url('styles/golunch-futuristic-styles.css', __FILE__), array(), '1.0');
+                    break;
+                case 'accordion':
+                    wp_enqueue_style('golunch-accordion-styles', plugins_url('styles/golunch-accordion-styles.css', __FILE__), array(), '1.0');
+                    wp_enqueue_script('golunch-accordion-script', plugins_url('js/golunch-accordion-script.js', __FILE__), array('jquery'), '1.0', true);
+                    break;
+                case 'carousel':
+                    wp_enqueue_style('golunch-carousel-styles', plugins_url('styles/golunch-carousel-styles.css', __FILE__), array(), '1.0');
+                    wp_enqueue_script('golunch-carousel-script', plugins_url('js/golunch-carousel-script.js', __FILE__), array('jquery'), '1.0', true);
+                    break;
+                case 'fadein':
+                    wp_enqueue_style('golunch-fadein-styles', plugins_url('styles/golunch-fadein-styles.css', __FILE__), array(), '1.0');
+                    wp_enqueue_script('golunch-fadein-script', plugins_url('js/golunch-fadein-script.js', __FILE__), array('jquery'), '1.0', true);
+                    break;
+                case 'vintage':
+                    wp_enqueue_style('golunch-vintage-styles', plugins_url('styles/golunch-vintage-styles.css', __FILE__), array(), '1.0');
+                    break;
+                case 'neon':
+                    wp_enqueue_style('golunch-neon-styles', plugins_url('styles/golunch-neon-styles.css', __FILE__), array(), '1.0');
+                    break;
+                case 'pastel':
+                    wp_enqueue_style('golunch-pastel-styles', plugins_url('styles/golunch-pastel-styles.css', __FILE__), array(), '1.0');
+                    break;
+                case 'chalkboard':
+                    wp_enqueue_style('golunch-chalkboard-styles', plugins_url('styles/golunch-chalkboard-styles.css', __FILE__), array(), '1.0');
+                    break;
+                case 'bistro':
+                    wp_enqueue_style('golunch-bistro-styles', plugins_url('styles/golunch-bistro-styles.css', __FILE__), array(), '1.0');
+                    break;
+                case 'seasonal':
+                    wp_enqueue_style('golunch-seasonal-styles', plugins_url('styles/golunch-seasonal-styles.css', __FILE__), array(), '1.0');
+                    wp_enqueue_script('golunch-seasonal-script', plugins_url('js/golunch-seasonal-script.js', __FILE__), array('jquery'), '1.0', true);
+                    break;
+                default:
+                    wp_enqueue_style('golunch-styles', plugins_url('styles/golunch-styles.css', __FILE__), array(), '1.0');
+                    break;
+            }
         }
     }
 
@@ -298,12 +304,12 @@ class MDJ_Menu_Du_Jour {
     public function settings_page() {
         ?>
         <div class="wrap">
-            <h1><span class="dashicons dashicons-food" style="font-size: 30px; vertical-align: text-center; margin-right: 10px;"></span> <?php _e('Réglages Menu du Jour', 'menudujour'); ?></h1>
+            <h1><span class="dashicons dashicons-food" style="font-size: 30px; vertical-align: text-center; margin-right: 10px;"></span> <?php esc_html_e('Réglages Menu du Jour', 'menudujour'); ?></h1>
 
             <div class="notice notice-info">
-                <p><?php _e('Utilisez le shortcode', 'menudujour'); ?> <code>[golunch_menus]</code> <?php _e('pour afficher les menus sur vos pages ou articles.', 'menudujour'); ?></p>
+                <p><?php esc_html_e('Utilisez le shortcode', 'menudujour'); ?> <code>[golunch_menus]</code> <?php esc_html_e('pour afficher les menus sur vos pages ou articles.', 'menudujour'); ?></p>
             </div>
-            <h3><?php _e('Réglages', 'menudujour'); ?></h3>
+            <h3><?php esc_html_e('Réglages', 'menudujour'); ?></h3>
             
             <div style="display: flex; justify-content: space-between;">
                 <form method="post" action="options.php" style="flex: 1; margin-right: 20px;">
@@ -313,14 +319,14 @@ class MDJ_Menu_Du_Jour {
                     ?>
                     <table class="form-table">
                         <tr valign="top">
-                            <th scope="row"><?php _e('ID du restaurant', 'menudujour'); ?></th>
+                            <th scope="row"><?php esc_html_e('ID du restaurant', 'menudujour'); ?></th>
                             <td>
                                 <input type="text" name="mdj_default_restaurant_id" value="<?php echo esc_attr(get_option('mdj_default_restaurant_id')); ?>" style="width: 300px;" />
-                                <p class="description"><?php _e('Entrez l\'ID GoLunch du restaurant.', 'menudujour'); ?></p>
+                                <p class="description"><?php esc_html_e('Entrez l\'ID GoLunch du restaurant.', 'menudujour'); ?></p>
                             </td>
                         </tr>
                         <tr valign="top">
-                            <th scope="row"><?php _e('Style d\'affichage', 'menudujour'); ?></th>
+                            <th scope="row"><?php esc_html_e('Style d\'affichage', 'menudujour'); ?></th>
                             <td>
                                 <select name="mdj_style_choice" id="mdj_style_choice">
                                     <?php
@@ -352,11 +358,11 @@ class MDJ_Menu_Du_Jour {
                                     }
                                     ?>
                                 </select>
-                                <p class="description"><?php _e('Choisissez le style d\'affichage pour vos menus.', 'menudujour'); ?></p>
+                                <p class="description"><?php esc_html_e('Choisissez le style d\'affichage pour vos menus.', 'menudujour'); ?></p>
                             </td>
                         </tr>
                         <tr valign="top">
-                            <th scope="row"><?php _e('Format de date', 'menudujour'); ?></th>
+                            <th scope="row"><?php esc_html_e('Format de date', 'menudujour'); ?></th>
                             <td>
                                 <select name="mdj_date_format" id="mdj_date_format">
                                     <?php
@@ -396,22 +402,22 @@ class MDJ_Menu_Du_Jour {
                                     }
                                     ?>
                                 </select>
-                                <p class="description"><?php _e('Choisissez le format de date pour l\'affichage des menus.', 'menudujour'); ?></p>
+                                <p class="description"><?php esc_html_e('Choisissez le format de date pour l\'affichage des menus.', 'menudujour'); ?></p>
                             </td>
                         </tr>
 
                         <tr valign="top">
-                            <th scope="row"><?php _e('Afficher le titre', 'menudujour'); ?></th>
+                            <th scope="row"><?php esc_html_e('Afficher le titre', 'menudujour'); ?></th>
                             <td>
                                 <select name="mdj_show_title">
-                                    <option value="yes" <?php selected(get_option('mdj_show_title', 'yes'), 'yes'); ?>><?php _e('Oui', 'menudujour'); ?></option>
-                                    <option value="no" <?php selected(get_option('mdj_show_title', 'yes'), 'no'); ?>><?php _e('Non', 'menudujour'); ?></option>
+                                    <option value="yes" <?php selected(get_option('mdj_show_title', 'yes'), 'yes'); ?>><?php esc_html_e('Oui', 'menudujour'); ?></option>
+                                    <option value="no" <?php selected(get_option('mdj_show_title', 'yes'), 'no'); ?>><?php esc_html_e('Non', 'menudujour'); ?></option>
                                 </select>
-                                <p class="description"><?php _e('Choisissez si vous voulez afficher le titre "Menus du ... au ..."', 'menudujour'); ?></p>
+                                <p class="description"><?php esc_html_e('Choisissez si vous voulez afficher le titre "Menus du ... au ..."', 'menudujour'); ?></p>
                             </td>
                         </tr>
                         <tr valign="top">
-                            <th scope="row"><?php _e('Devise', 'menudujour'); ?></th>
+                            <th scope="row"><?php esc_html_e('Devise', 'menudujour'); ?></th>
                             <td>
                                 <select name="mdj_currency" id="mdj_currency">
                                     <?php
@@ -426,7 +432,7 @@ class MDJ_Menu_Du_Jour {
                                     }
                                     ?>
                                 </select>
-                                <p class="description"><?php _e('Choisissez la devise pour l\'affichage des prix.', 'menudujour'); ?></p>
+                                <p class="description"><?php esc_html_e('Choisissez la devise pour l\'affichage des prix.', 'menudujour'); ?></p>
                             </td>
                         </tr>
                     </table>
@@ -435,7 +441,7 @@ class MDJ_Menu_Du_Jour {
                 </form>
 
                 <div id="style-preview" style="flex: 1; border: 1px solid #ddd; padding: 10px; max-width: 500px;">
-                    <h3><?php _e('Aperçu du style', 'menudujour'); ?></h3>
+                    <h3><?php esc_html_e('Aperçu du style', 'menudujour'); ?></h3>
                     <div id="preview-content">
                         <!-- Le contenu de l'aperçu sera chargé ici via JavaScript -->
                     </div>
