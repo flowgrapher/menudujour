@@ -59,14 +59,14 @@ class MDJ_Menu_Du_Jour {
             error_log(__('Aucun menu trouvé pour le restaurant ID: ', 'menudujour') . $restaurant_id);
         }
 
-        set_transient($cache_key, $menus, HOUR_IN_SECONDS); // Cache for 1 hour
+        //set_transient($cache_key, $menus, HOUR_IN_SECONDS); // Cache for 1 hour
 
         return $menus;
     }
 
     public function display_menus($atts) {
         $atts = shortcode_atts(array(
-            'restaurant_id' => get_option('mdj_default_restaurant_id', '2'), // Default ID set to 2
+            'restaurant_id' => get_option('mdj_default_restaurant_id', 'ff9e484a-3e56-4404-a4bc-881dfae500c6'),
             'show_title' => get_option('mdj_show_title', 'yes'),
             'currency' => get_option('mdj_currency', 'CHF'),
         ), $atts, 'golunch_menus');
@@ -312,10 +312,10 @@ class MDJ_Menu_Du_Jour {
                     ?>
                     <table class="form-table">
                         <tr valign="top">
-                            <th scope="row"><?php _e('ID du restaurant par défaut', 'menudujour'); ?></th>
+                            <th scope="row"><?php _e('ID du restaurant', 'menudujour'); ?></th>
                             <td>
-                                <input type="text" name="mdj_default_restaurant_id" value="<?php echo esc_attr(get_option('mdj_default_restaurant_id')); ?>" />
-                                <p class="description"><?php _e('Entrez l\'ID du restaurant GoLunch par défaut.', 'menudujour'); ?></p>
+                                <input type="text" name="mdj_default_restaurant_id" value="<?php echo esc_attr(get_option('mdj_default_restaurant_id')); ?>" style="width: 300px;" />
+                                <p class="description"><?php _e('Entrez l\'ID GoLunch du restaurant.', 'menudujour'); ?></p>
                             </td>
                         </tr>
                         <tr valign="top">
