@@ -118,7 +118,12 @@ class MDJ_Menu_Du_Jour {
             }
 
             $output .= '<div class="golunch-menu">';
-            $output .= '<h3>' . date_i18n($date_format, $menu_date) . '</h3>';
+            if (!empty($menu['date_end'])) {
+                $date_end = strtotime($menu['date_end']);
+                $output .= '<h3>' . date_i18n($date_format, $menu_date) . ' - ' . date_i18n($date_format, $date_end) . '</h3>';
+            } else {
+                $output .= '<h3>' . date_i18n($date_format, $menu_date) . '</h3>';
+            }
             $output .= '<div class="golunch-menu-content">';
             if (!empty($menu['entree'])) {
                 $output .= '<p><strong>' . __('Entrée:', 'menudujour') . '</strong> ' . esc_html($menu['entree']) . '</p>';
