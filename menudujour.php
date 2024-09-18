@@ -3,7 +3,8 @@
 Plugin Name: Menu du Jour
 Description: Affiche les menus du jour depuis l'API GoLunch
 Version: 1.1
-Author: Votre Nom
+Author: Florian Gay
+Author URI: https://golun.ch
 Text Domain: menudujour
 Domain Path: /languages
 License: GPLv2 or later
@@ -59,7 +60,7 @@ class MDJ_Menu_Du_Jour {
             error_log(__('Aucun menu trouvé pour le restaurant ID: ', 'menudujour') . $restaurant_id);
         }
 
-        //set_transient($cache_key, $menus, HOUR_IN_SECONDS); // Cache for 1 hour
+        set_transient($cache_key, $menus, HOUR_IN_SECONDS); // Cache for 1 hour
 
         return $menus;
     }
@@ -85,7 +86,7 @@ class MDJ_Menu_Du_Jour {
             return __('Aucun menu disponible pour le moment.', 'menudujour');
         }
         
-        $style_choice = get_option('mdj_style_choice', 'elegant'); // Default style set to 'elegant'
+        $style_choice = get_option('mdj_style_choice', 'elegant');
         $date_format = get_option('mdj_date_format', 'd/m/Y');
         $currency = $atts['currency'];
         $output = '<div class="golunch-menus golunch-' . esc_attr($style_choice) . '">';
@@ -160,7 +161,7 @@ class MDJ_Menu_Du_Jour {
     }
 
     public function enqueue_styles() {
-        $style_choice = get_option('mdj_style_choice', 'elegant'); // Default style set to 'elegant'
+        $style_choice = get_option('mdj_style_choice', 'elegant');
         switch ($style_choice) {
             case 'elegant':
                 wp_enqueue_style('golunch-elegant-styles', plugins_url('styles/golunch-elegant-styles.css', __FILE__));
