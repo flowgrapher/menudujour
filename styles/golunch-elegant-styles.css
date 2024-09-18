@@ -1,0 +1,37 @@
+.golunch-menus.golunch-elegant {
+    max-width: 700px;
+    margin: 0 auto;
+    font-family: 'Georgia', serif;
+}
+
+.golunch-elegant .golunch-menu {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.golunch-elegant .golunch-menu:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.golunch-elegant .golunch-menu h3 {
+    margin-top: 0;
+    color: #2c3e50;
+    font-size: 1.4em;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.golunch-elegant .golunch-menu p {
+    margin: 10px 0;
+    color: #34495e;
+    line-height: 1.6;
+}
+
+.golunch-elegant .golunch-menu strong {
+    color: #2c3e50;
+    font-weight: 600;
+}

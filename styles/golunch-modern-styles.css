@@ -1,0 +1,47 @@
+.golunch-menus.golunch-modern {
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+.golunch-modern .golunch-menu {
+    background-color: #ffffff;
+    border: none;
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.golunch-modern .golunch-menu:hover {
+    transform: translateY(-5px);
+}
+
+.golunch-modern .golunch-menu h3 {
+    margin-top: 0;
+    color: #1abc9c;
+    font-size: 1.5em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.golunch-modern .golunch-menu p {
+    margin: 12px 0;
+    color: #34495e;
+    line-height: 1.7;
+}
+
+.golunch-modern .golunch-menu strong {
+    color: #2c3e50;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9em;
+    letter-spacing: 0.5px;
+}
+
+.golunch-modern .golunch-menu p:last-child {
+    margin-top: 20px;
+    font-weight: bold;
+    color: #e74c3c;
+}

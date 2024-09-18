@@ -1,0 +1,34 @@
+.golunch-menus.golunch-fadein {
+    max-width: 700px;
+    margin: 0 auto;
+    font-family: 'Arial', sans-serif;
+}
+
+.golunch-fadein .golunch-menu {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 5px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.golunch-fadein .golunch-menu.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.golunch-fadein .golunch-menu h3 {
+    color: #333;
+    margin-top: 0;
+}
+
+.golunch-fadein .golunch-menu p {
+    margin: 10px 0;
+}
+
+.golunch-fadein .golunch-menu strong {
+    color: #666;
+}

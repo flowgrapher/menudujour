@@ -1,0 +1,31 @@
+.golunch-menus.golunch-retro {
+    max-width: 700px;
+    margin: 0 auto;
+    font-family: 'Courier New', monospace;
+    background-color: #f4e9d7;
+    padding: 20px;
+    border: 5px solid #8b4513;
+}
+
+.golunch-retro .golunch-menu {
+    background-color: #fff9e6;
+    border: 2px dashed #8b4513;
+    margin-bottom: 20px;
+    padding: 15px;
+    box-shadow: 5px 5px 0 #8b4513;
+}
+
+.golunch-retro .golunch-menu h3 {
+    color: #8b4513;
+    font-size: 1.4em;
+    text-decoration: underline;
+}
+
+.golunch-retro .golunch-menu p {
+    color: #5c3317;
+}
+
+.golunch-retro .golunch-menu strong {
+    color: #8b4513;
+    font-weight: bold;
+}

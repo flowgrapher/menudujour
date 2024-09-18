@@ -1,0 +1,33 @@
+.golunch-menus.golunch-minimalist {
+    max-width: 600px;
+    margin: 0 auto;
+    font-family: 'Arial', sans-serif;
+}
+
+.golunch-minimalist .golunch-menu {
+    background-color: #ffffff;
+    border-left: 3px solid #000;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+}
+
+.golunch-minimalist .golunch-menu h3 {
+    color: #000;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+}
+
+.golunch-minimalist .golunch-menu p {
+    margin: 10px 0;
+    color: #333;
+    line-height: 1.4;
+}
+
+.golunch-minimalist .golunch-menu strong {
+    font-weight: 600;
+}
+
+.golunch-minimalist .golunch-menu p:last-child {
+    margin-top: 15px;
+    font-weight: bold;
+}

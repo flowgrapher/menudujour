@@ -1,0 +1,30 @@
+.golunch-menus.golunch-dark {
+    max-width: 700px;
+    margin: 0 auto;
+    font-family: 'Arial', sans-serif;
+    background-color: #222;
+    padding: 20px;
+    color: #fff;
+}
+
+.golunch-dark .golunch-menu {
+    background-color: #333;
+    border: 1px solid #444;
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.golunch-dark .golunch-menu h3 {
+    color: #e0e0e0;
+    border-bottom: 2px solid #555;
+    padding-bottom: 10px;
+}
+
+.golunch-dark .golunch-menu p {
+    color: #ccc;
+}
+
+.golunch-dark .golunch-menu strong {
+    color: #fff;
+}

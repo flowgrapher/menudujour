@@ -1,0 +1,50 @@
+.golunch-menus.golunch-carousel {
+    max-width: 700px;
+    margin: 0 auto;
+    font-family: 'Arial', sans-serif;
+    position: relative;
+}
+
+.golunch-carousel .golunch-menu {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 5px;
+    display: none;
+}
+
+.golunch-carousel .golunch-menu.active {
+    display: block;
+}
+
+.golunch-carousel .golunch-menu h3 {
+    color: #333;
+    margin-top: 0;
+}
+
+.golunch-carousel .golunch-menu p {
+    margin: 10px 0;
+}
+
+.golunch-carousel .golunch-menu strong {
+    color: #666;
+}
+
+.golunch-carousel-nav {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.golunch-carousel-nav button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.golunch-carousel-nav button:hover {
+    background-color: #555;
+}

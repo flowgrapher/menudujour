@@ -1,0 +1,21 @@
+.golunch-menus {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.golunch-menu {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.golunch-menu h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.golunch-menu p {
+    margin: 5px 0;
+}
