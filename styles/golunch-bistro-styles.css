@@ -1,0 +1,19 @@
+.golunch-bistro {
+    font-family: 'Lora', serif;
+    background-color: #f8f4e6;
+    color: #4a4a4a;
+    padding: 20px;
+    border: 3px double #8b4513;
+}
+
+.golunch-bistro h2, .golunch-bistro h3 {
+    font-family: 'Playfair Display', serif;
+    color: #8b4513;
+}
+
+.golunch-bistro .golunch-menu {
+    background-color: #fff;
+    border: 1px solid #d2b48c;
+    margin-bottom: 15px;
+    padding: 15px;
+}

@@ -1,0 +1,30 @@
+.golunch-vintage {
+    font-family: 'Courier New', monospace;
+    background-color: #f2e8d5;
+    color: #4a3c31;
+    border: 4px solid #8b4513;
+    padding: 20px;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAAAZSURBVHjaYmRgYPj/n+E/AxJgYkAFAAD//wMAP8sPP67TIfoAAAAASUVORK5CYII=');
+}
+
+.golunch-vintage h2, .golunch-vintage h3 {
+    font-family: 'Times New Roman', serif;
+    color: #8b4513;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 2px dotted #8b4513;
+    padding-bottom: 5px;
+}
+
+.golunch-vintage .golunch-menu {
+    background-color: #faf6f0;
+    border: 1px dashed #a67c52;
+    margin-bottom: 15px;
+    padding: 15px;
+    box-shadow: 3px 3px 0 #d3b78e;
+}
+
+.golunch-vintage .golunch-menu p {
+    font-family: 'Georgia', serif;
+    line-height: 1.6;
+}
