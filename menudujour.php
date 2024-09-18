@@ -295,41 +295,46 @@ class Menu_Du_Jour {
                             <select name="mdj_date_format" id="mdj_date_format">
                                 <?php
                                 $date_formats = array(
-                                    'd/m/Y' => 'JJ/MM/AAAA (31/12/2023)',
-                                    'd.m.Y' => 'JJ.MM.AAAA (31.12.2023)',
-                                    'd-m-Y' => 'JJ-MM-AAAA (31-12-2023)',
-                                    'j F Y' => 'J Mois AAAA (31 Décembre 2023)',
-                                    'F j, Y' => 'Mois J, AAAA (Décembre 31, 2023)',
-                                    'j M Y' => 'J Mois AAAA abrégé (31 Déc 2023)',
-                                    'D j M Y' => 'Jour J Mois AAAA (Dim 31 Déc 2023)',
-                                    'l j F Y' => 'Jour J Mois AAAA complet (Dimanche 31 Décembre 2023)',
-                                    'Y-m-d' => 'AAAA-MM-JJ (2023-12-31)',
-                                    'Y.m.d' => 'AAAA.MM.JJ (2023.12.31)',
-                                    'd/m/y' => 'JJ/MM/AA (31/12/23)',
-                                    'd.m.y' => 'JJ.MM.AA (31.12.23)',
-                                    'j/n/Y' => 'J/M/AAAA sans zéros (31/12/2023)',
-                                    'j.n.Y' => 'J.M.AAAA sans zéros (31.12.2023)',
-                                    'j/n/y' => 'J/M/AA sans zéros (31/12/23)',
-                                    'j.n.y' => 'J.M.AA sans zéros (31.12.23)',
-                                    'd F Y' => 'JJ Mois AAAA (31 Décembre 2023)',
-                                    'l d F Y' => 'Jour JJ Mois AAAA (Dimanche 31 Décembre 2023)',
-                                    'D d F Y' => 'Jour JJ Mois AAAA abrégé (Dim 31 Décembre 2023)',
-                                    'Y F j' => 'AAAA Mois J (2023 Décembre 31)',
-                                    'j. F Y' => 'J. Mois AAAA (31. Décembre 2023)',
-                                    'j. M Y' => 'J. Mois AAAA abrégé (31. Déc 2023)',
-                                    'j. M. Y' => 'J. Mois. AAAA abrégé (31. Déc. 2023)',
-                                    'W/Y' => 'Semaine/AAAA (52/2023)',
-                                    'W/y' => 'Semaine/AA (52/23)',
+                                    'd/m/Y' => 'JJ/MM/AAAA (',
+                                    'd.m.Y' => 'JJ.MM.AAAA (',
+                                    'd-m-Y' => 'JJ-MM-AAAA (',
+                                    'j F Y' => 'J Mois AAAA (',
+                                    'F j, Y' => 'Mois J, AAAA (',
+                                    'j M Y' => 'J Mois AAAA abrégé (',
+                                    'D j M Y' => 'Jour J Mois AAAA (',
+                                    'l j F Y' => 'Jour J Mois AAAA complet (',
+                                    'Y-m-d' => 'AAAA-MM-JJ (',
+                                    'Y.m.d' => 'AAAA.MM.JJ (',
+                                    'd/m/y' => 'JJ/MM/AA (',
+                                    'd.m.y' => 'JJ.MM.AA (',
+                                    'j/n/Y' => 'J/M/AAAA sans zéros (',
+                                    'j.n.Y' => 'J.M.AAAA sans zéros (',
+                                    'j/n/y' => 'J/M/AA sans zéros (',
+                                    'j.n.y' => 'J.M.AA sans zéros (',
+                                    'd F Y' => 'JJ Mois AAAA (',
+                                    'l d F Y' => 'Jour JJ Mois AAAA (',
+                                    'D d F Y' => 'Jour JJ Mois AAAA abrégé (',
+                                    'Y F j' => 'AAAA Mois J (',
+                                    'j. F Y' => 'J. Mois AAAA (',
+                                    'j. M Y' => 'J. Mois AAAA abrégé (',
+                                    'j. M. Y' => 'J. Mois. AAAA abrégé (',
+                                    'W/Y' => 'Semaine/AAAA (',
+                                    'W/y' => 'Semaine/AA (',
                                 );
                                 $current_format = get_option('mdj_date_format', 'd/m/Y');
+                                $current_timestamp = current_time('timestamp'); // Obtenir l'horodatage actuel selon WordPress
+
                                 foreach ($date_formats as $value => $label) {
-                                    echo '<option value="' . esc_attr($value) . '" ' . selected($current_format, $value, false) . '>' . esc_html($label) . ' (' . date_i18n($value) . ')</option>';
+                                    // Formater la date actuelle selon le format courant
+                                    $formatted_date = date_i18n($value, $current_timestamp);
+                                    echo '<option value="' . esc_attr($value) . '" ' . selected($current_format, $value, false) . '>' . esc_html($label) . esc_html($formatted_date) . ')</option>';
                                 }
                                 ?>
                             </select>
                             <p class="description">Choisissez le format de date pour l'affichage des menus.</p>
                         </td>
                     </tr>
+
                     <tr valign="top">
                         <th scope="row">Afficher le titre</th>
                         <td>
