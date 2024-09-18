@@ -2,7 +2,7 @@
 /*
 Plugin Name: Menu du Jour
 Description: Affiche les menus du jour depuis l'API GoLunch
-Version: 1.0
+Version: 1.1
 Author: Votre Nom
 */
 
@@ -57,8 +57,9 @@ class Menu_Du_Jour {
     public function display_menus($atts) {
         $atts = shortcode_atts(array(
             'restaurant_id' => get_option('mdj_default_restaurant_id', ''),
-            'show_title' => get_option('mdj_show_title', 'yes'), // Nouvelle option
-        ), $atts);
+            'show_title' => get_option('mdj_show_title', 'yes'),
+            'currency' => get_option('mdj_currency', 'CHF'),
+        ), $atts, 'golunch_menus');
 
         if (empty($atts['restaurant_id'])) {
             return 'Erreur : ID du restaurant manquant.';
@@ -76,6 +77,7 @@ class Menu_Du_Jour {
         
         $style_choice = get_option('mdj_style_choice', 'default');
         $date_format = get_option('mdj_date_format', 'd/m/Y');
+        $currency = $atts['currency'];
         $output = '<div class="golunch-menus golunch-' . esc_attr($style_choice) . '">';
         
         // Trier les menus par date de début
@@ -100,7 +102,7 @@ class Menu_Du_Jour {
                 $current_week_end = $week_end;
 
                 $output .= '<div class="golunch-week">';
-                if ($atts['show_title'] === 'yes') { // Vérification de l'option
+                if ($atts['show_title'] === 'yes') {
                     $output .= '<h2>Menus du ' . date_i18n($date_format, strtotime($week_start)) . 
                                ' au ' . date_i18n($date_format, strtotime($week_end)) . '</h2>';
                 }
@@ -116,7 +118,7 @@ class Menu_Du_Jour {
             if (!empty($menu['dessert'])) {
                 $output .= '<p><strong>Dessert:</strong> ' . esc_html($menu['dessert']) . '</p>';
             }
-            $output .= '<p><strong>Prix:</strong> ' . esc_html($menu['prix']) . ' CHF</p>';
+            $output .= '<p><strong>Prix:</strong> ' . esc_html($menu['prix']) . ' ' . esc_html($currency) . '</p>';
             $output .= '</div></div>';
         }
 
@@ -231,7 +233,8 @@ class Menu_Du_Jour {
         register_setting('mdj_settings', 'mdj_default_restaurant_id');
         register_setting('mdj_settings', 'mdj_style_choice');
         register_setting('mdj_settings', 'mdj_date_format');
-        register_setting('mdj_settings', 'mdj_show_title'); // Nouvelle option
+        register_setting('mdj_settings', 'mdj_show_title');
+        register_setting('mdj_settings', 'mdj_currency'); // Enregistrement de la devise
     }
 
     public function settings_page() {
@@ -335,6 +338,25 @@ class Menu_Du_Jour {
                                 <option value="no" <?php selected(get_option('mdj_show_title', 'yes'), 'no'); ?>>Non</option>
                             </select>
                             <p class="description">Choisissez si vous voulez afficher le titre "Menus du ... au ..."</p>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">Devise</th>
+                        <td>
+                            <select name="mdj_currency" id="mdj_currency">
+                                <?php
+                                $currencies = array(
+                                    'CHF' => 'CHF',
+                                    '€'   => 'Euro (€)',
+                                    '$'   => 'Dollar ($)'
+                                );
+                                $current_currency = get_option('mdj_currency', 'CHF');
+                                foreach ($currencies as $value => $label) {
+                                    echo '<option value="' . esc_attr($value) . '" ' . selected($current_currency, $value, false) . '>' . esc_html($label) . '</option>';
+                                }
+                                ?>
+                            </select>
+                            <p class="description">Choisissez la devise pour l'affichage des prix.</p>
                         </td>
                     </tr>
                 </table>

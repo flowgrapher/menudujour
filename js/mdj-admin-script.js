@@ -4,6 +4,7 @@ jQuery(document).ready(function ($) {
         var previewContent = $('#preview-content');
         var dateFormat = $('#mdj_date_format').val();
         var currentDate = new Date();
+        var currency = $('#mdj_currency').val(); // Récupérer la devise sélectionnée
 
         // Formater la date en utilisant un format de date simple pour l'aperçu
         var options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -16,7 +17,7 @@ jQuery(document).ready(function ($) {
             '<p><strong>Entrée:</strong> Salade César</p>' +
             '<p><strong>Plat:</strong> Steak frites</p>' +
             '<p><strong>Dessert:</strong> Tarte aux pommes</p>' +
-            '<p><strong>Prix:</strong> 25 CHF</p>' +
+            '<p><strong>Prix:</strong> 25 ' + currency + '</p>' +
             '</div></div></div>';
 
         previewContent.html(menuHtml);
@@ -48,6 +49,6 @@ jQuery(document).ready(function ($) {
         }
     }
 
-    $('#mdj_style_choice, #mdj_date_format').change(updatePreview);
+    $('#mdj_style_choice, #mdj_date_format, #mdj_currency').change(updatePreview); // Inclure la devise dans les changements à surveiller
     updatePreview(); // Appeler au chargement initial
 });
