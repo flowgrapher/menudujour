@@ -57,6 +57,7 @@ class Menu_Du_Jour {
     public function display_menus($atts) {
         $atts = shortcode_atts(array(
             'restaurant_id' => get_option('mdj_default_restaurant_id', ''),
+            'show_title' => get_option('mdj_show_title', 'yes'), // Nouvelle option
         ), $atts);
 
         if (empty($atts['restaurant_id'])) {
@@ -99,8 +100,10 @@ class Menu_Du_Jour {
                 $current_week_end = $week_end;
 
                 $output .= '<div class="golunch-week">';
-                $output .= '<h2>Menus du ' . date_i18n($date_format, strtotime($week_start)) . 
-                           ' au ' . date_i18n($date_format, strtotime($week_end)) . '</h2>';
+                if ($atts['show_title'] === 'yes') { // Vérification de l'option
+                    $output .= '<h2>Menus du ' . date_i18n($date_format, strtotime($week_start)) . 
+                               ' au ' . date_i18n($date_format, strtotime($week_end)) . '</h2>';
+                }
             }
 
             $output .= '<div class="golunch-menu">';
@@ -228,6 +231,7 @@ class Menu_Du_Jour {
         register_setting('mdj_settings', 'mdj_default_restaurant_id');
         register_setting('mdj_settings', 'mdj_style_choice');
         register_setting('mdj_settings', 'mdj_date_format');
+        register_setting('mdj_settings', 'mdj_show_title'); // Nouvelle option
     }
 
     public function settings_page() {
@@ -321,6 +325,16 @@ class Menu_Du_Jour {
                                 ?>
                             </select>
                             <p class="description">Choisissez le format de date pour l'affichage des menus.</p>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">Afficher le titre</th>
+                        <td>
+                            <select name="mdj_show_title">
+                                <option value="yes" <?php selected(get_option('mdj_show_title', 'yes'), 'yes'); ?>>Oui</option>
+                                <option value="no" <?php selected(get_option('mdj_show_title', 'yes'), 'no'); ?>>Non</option>
+                            </select>
+                            <p class="description">Choisissez si vous voulez afficher le titre "Menus du ... au ..."</p>
                         </td>
                     </tr>
                 </table>
