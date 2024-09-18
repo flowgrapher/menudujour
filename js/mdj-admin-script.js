@@ -54,7 +54,7 @@ jQuery(document).ready(function ($) {
         var previewContent = $('#preview-content');
         var dateFormat = $('#mdj_date_format').val();
         var currentDate = new Date();
-        var currency = $('#mdj_currency').val(); // Récupérer la devise sélectionnée
+        var currency = $('#mdj_currency').val();
 
         // Formater la date en utilisant le format PHP sélectionné
         var formattedDate = formatDate(currentDate, dateFormat);
@@ -63,8 +63,8 @@ jQuery(document).ready(function ($) {
             '<div class="golunch-menu">' +
             '<h3>Menu du ' + formattedDate + '</h3>' +
             '<div class="golunch-menu-content">' +
-            '<p><strong>Entrée:</strong> Salade César</p>' +
-            '<p><strong>Plat:</strong> Steak frites</p>' +
+            '<p><strong>Entrée:</strong> Salade verte</p>' +
+            '<p><strong>Plat:</strong> Poulet rôti, sauce champignons, frites et légumes du jour</p>' +
             '<p><strong>Dessert:</strong> Tarte aux pommes</p>' +
             '<p><strong>Prix:</strong> 25 ' + currency + '</p>' +
             '</div></div></div>';
@@ -83,7 +83,7 @@ jQuery(document).ready(function ($) {
             .appendTo('head');
 
         // Charger le script JS si nécessaire
-        var stylesWithScript = ['interactive', 'accordion', 'carousel', 'fadein'];
+        var stylesWithScript = ['interactive', 'accordion', 'carousel', 'fadein', 'seasonal'];
         if (stylesWithScript.includes(selectedStyle)) {
             // Vérifiez si le script n'est pas déjà chargé
             if (!$('script[src="' + mdj_ajax_object.plugin_url + '/js/golunch-' + selectedStyle + '-script.js"]').length) {
@@ -98,6 +98,6 @@ jQuery(document).ready(function ($) {
         }
     }
 
-    $('#mdj_style_choice, #mdj_date_format, #mdj_currency').change(updatePreview); // Inclure la devise dans les changements à surveiller
+    $('#mdj_style_choice, #mdj_date_format, #mdj_currency').change(updatePreview);
     updatePreview(); // Appeler au chargement initial
 });

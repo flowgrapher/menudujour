@@ -12,7 +12,7 @@ jQuery(document).ready(function ($) {
             });
             $seasonal.find('.golunch-menu').css({
                 'border': '1px solid #87CEFA',
-                'background-color': 'rgba(255, 255, 255, 0.7)'
+                'background-color': 'rgba(255, 255, 255, 0.9)' // Augmentation de l'opacité
             });
             $seasonal.find('h2, h3').css('color', '#4a90e2');
             $seasonal.css('background-image', 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\' viewBox=\'0 0 20 20\'%3E%3Cpath d=\'M10 2C5.6 2 2 5.6 2 10s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z\' fill=\'%234a90e2\'/%3E%3C/svg%3E")');
@@ -24,7 +24,7 @@ jQuery(document).ready(function ($) {
             });
             $seasonal.find('.golunch-menu').css({
                 'border': '1px solid #f39c12',
-                'background-color': 'rgba(255, 255, 255, 0.7)'
+                'background-color': 'rgba(255, 255, 255, 0.9)' // Augmentation de l'opacité
             });
             $seasonal.find('h2, h3').css('color', '#f39c12');
             $seasonal.css('background-image', 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\' viewBox=\'0 0 20 20\'%3E%3Cpath d=\'M10 2c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z\' fill=\'%23f39c12\'/%3E%3C/svg%3E")');
@@ -36,7 +36,7 @@ jQuery(document).ready(function ($) {
             });
             $seasonal.find('.golunch-menu').css({
                 'border': '1px solid #d35400',
-                'background-color': 'rgba(255, 255, 255, 0.7)'
+                'background-color': 'rgba(255, 255, 255, 0.9)' // Augmentation de l'opacité
             });
             $seasonal.find('h2, h3').css('color', '#d35400');
             $seasonal.css('background-image', 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\' viewBox=\'0 0 20 20\'%3E%3Cpath d=\'M10 2c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z\' fill=\'%23d35400\'/%3E%3C/svg%3E")');
@@ -48,7 +48,7 @@ jQuery(document).ready(function ($) {
             });
             $seasonal.find('.golunch-menu').css({
                 'border': '1px solid #3498db',
-                'background-color': 'rgba(255, 255, 255, 0.7)'
+                'background-color': 'rgba(255, 255, 255, 0.9)' // Augmentation de l'opacité
             });
             $seasonal.find('h2, h3').css('color', '#3498db');
             $seasonal.css('background-image', 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\' viewBox=\'0 0 20 20\'%3E%3Cpath d=\'M10 2c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z\' fill=\'%233498db\'/%3E%3C/svg%3E")');
