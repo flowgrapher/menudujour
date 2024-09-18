@@ -2,6 +2,11 @@
 
 Ce plugin WordPress affiche les menus du jour depuis l'API GoLunch.
 
+## Captures d'écran
+
+Page de configuration du plugin
+![Page de configuration](assets/screenshot-1.png)
+
 ## Installation
 
 1. Téléchargez le dossier du plugin et placez-le dans le répertoire `wp-content/plugins/` de votre installation WordPress.
@@ -39,6 +44,12 @@ Le plugin offre plusieurs styles d'affichage pour les menus :
 - Accordéon
 - Carrousel
 - Fade-in
+- Vintage
+- Pastel
+- Néon
+- Bistro
+- Rustique
+- Saisonnier
 
 Vous pouvez prévisualiser ces styles dans la page de configuration du plugin.
 
