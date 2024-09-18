@@ -49,7 +49,7 @@ class Menu_Du_Jour {
             error_log('Aucun menu trouvé pour le restaurant ID: ' . $restaurant_id);
         }
 
-        set_transient($cache_key, $menus, HOUR_IN_SECONDS); // Cache for 1 hour
+        //set_transient($cache_key, $menus, HOUR_IN_SECONDS); // Cache for 1 hour
 
         return $menus;
     }
@@ -237,9 +237,9 @@ class Menu_Du_Jour {
     public function settings_page() {
         ?>
         <div class="wrap">
-            <h1><span class="dashicons dashicons-food" style="font-size: 30px; vertical-align: text-bottom;"></span> Réglages Menu du Jour</h1>
-            
-            <div class="notice notice-info is-dismissible">
+            <h1><span class="dashicons dashicons-food" style="font-size: 30px; vertical-align: text-center; margin-right: 10px;"></span> Réglages Menu du Jour</h1>
+
+            <div class="notice notice-info">
                 <p>Utilisez le shortcode <code>[golunch_menus]</code> pour afficher les menus sur vos pages ou articles.</p>
             </div>
             

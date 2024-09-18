@@ -1,4 +1,4 @@
-# GoLunch Menu du Jour
+# Menu du Jour - Plugin WordPress
 
 Ce plugin WordPress affiche les menus du jour depuis l'API GoLunch.
 
@@ -9,9 +9,11 @@ Ce plugin WordPress affiche les menus du jour depuis l'API GoLunch.
 
 ## Configuration
 
-1. Allez dans "Réglages" > "GoLunch Menu" dans le panneau d'administration WordPress.
+1. Dans le panneau d'administration WordPress, cliquez sur "Menu du Jour" dans la barre latérale.
 2. Entrez l'ID du restaurant par défaut.
-3. Cliquez sur "Enregistrer les modifications".
+3. Choisissez le style d'affichage pour vos menus.
+4. Sélectionnez le format de date souhaité.
+5. Cliquez sur "Enregistrer les modifications".
 
 ## Utilisation
 
