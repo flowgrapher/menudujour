@@ -4,19 +4,29 @@ Plugin Name: Menu du Jour
 Description: Affiche les menus du jour depuis l'API GoLunch
 Version: 1.1
 Author: Votre Nom
+Text Domain: menudujour
+Domain Path: /languages
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
-class Menu_Du_Jour {
+class MDJ_Menu_Du_Jour {
+
     public function __construct() {
+        add_action('init', array($this, 'load_textdomain'));
         add_shortcode('golunch_menus', array($this, 'display_menus'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_init', array($this, 'register_settings'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
+    }
+
+    public function load_textdomain() {
+        load_plugin_textdomain('menudujour', false, dirname(plugin_basename(__FILE__)) . '/languages');
     }
 
     public function get_menus($restaurant_id) {
@@ -28,10 +38,10 @@ class Menu_Du_Jour {
         }
 
         $api_url = "https://golun.ch/api/v1/restaurants/" . $restaurant_id . "/menus";
-        $response = wp_remote_get($api_url);
+        $response = wp_remote_get($api_url, array('timeout' => 10));
         
         if (is_wp_error($response)) {
-            error_log('Erreur API: ' . $response->get_error_message());
+            error_log(__('Erreur API: ', 'menudujour') . $response->get_error_message());
             return false;
         }
         
@@ -39,17 +49,17 @@ class Menu_Du_Jour {
         $data = json_decode($body, true);
         
         if (json_last_error() !== JSON_ERROR_NONE) {
-            error_log('Erreur JSON: ' . json_last_error_msg());
+            error_log(__('Erreur JSON: ', 'menudujour') . json_last_error_msg());
             return false;
         }
         
         $menus = $data['menus'] ?? [];
 
         if (empty($menus)) {
-            error_log('Aucun menu trouvé pour le restaurant ID: ' . $restaurant_id);
+            error_log(__('Aucun menu trouvé pour le restaurant ID: ', 'menudujour') . $restaurant_id);
         }
 
-        //set_transient($cache_key, $menus, HOUR_IN_SECONDS); // Cache for 1 hour
+        set_transient($cache_key, $menus, HOUR_IN_SECONDS); // Cache for 1 hour
 
         return $menus;
     }
@@ -62,17 +72,17 @@ class Menu_Du_Jour {
         ), $atts, 'golunch_menus');
 
         if (empty($atts['restaurant_id'])) {
-            return 'Erreur : ID du restaurant manquant.';
+            return __('Erreur : ID du restaurant manquant.', 'menudujour');
         }
 
         $menus = $this->get_menus($atts['restaurant_id']);
         
         if (false === $menus) {
-            return 'Erreur : Impossible de récupérer les menus. Veuillez réessayer plus tard.';
+            return __('Erreur : Impossible de récupérer les menus. Veuillez réessayer plus tard.', 'menudujour');
         }
         
         if (empty($menus)) {
-            return 'Aucun menu disponible pour le moment.';
+            return __('Aucun menu disponible pour le moment.', 'menudujour');
         }
         
         $style_choice = get_option('mdj_style_choice', 'default');
@@ -103,22 +113,21 @@ class Menu_Du_Jour {
 
                 $output .= '<div class="golunch-week">';
                 if ($atts['show_title'] === 'yes') {
-                    $output .= '<h2>Menus du ' . date_i18n($date_format, strtotime($week_start)) . 
-                               ' au ' . date_i18n($date_format, strtotime($week_end)) . '</h2>';
+                    $output .= '<h2>' . sprintf(__('Menus du %s au %s', 'menudujour'), date_i18n($date_format, strtotime($week_start)), date_i18n($date_format, strtotime($week_end))) . '</h2>';
                 }
             }
 
             $output .= '<div class="golunch-menu">';
-            $output .= '<h3>' . date_i18n('l', $menu_date) . ' ' . date_i18n($date_format, $menu_date) . '</h3>';
+            $output .= '<h3>' . date_i18n($date_format, $menu_date) . '</h3>';
             $output .= '<div class="golunch-menu-content">';
             if (!empty($menu['entree'])) {
-                $output .= '<p><strong>Entrée:</strong> ' . esc_html($menu['entree']) . '</p>';
+                $output .= '<p><strong>' . __('Entrée:', 'menudujour') . '</strong> ' . esc_html($menu['entree']) . '</p>';
             }
-            $output .= '<p><strong>Plat:</strong> ' . esc_html($menu['plat']) . '</p>';
+            $output .= '<p><strong>' . __('Plat:', 'menudujour') . '</strong> ' . esc_html($menu['plat']) . '</p>';
             if (!empty($menu['dessert'])) {
-                $output .= '<p><strong>Dessert:</strong> ' . esc_html($menu['dessert']) . '</p>';
+                $output .= '<p><strong>' . __('Dessert:', 'menudujour') . '</strong> ' . esc_html($menu['dessert']) . '</p>';
             }
-            $output .= '<p><strong>Prix:</strong> ' . esc_html($menu['prix']) . ' ' . esc_html($currency) . '</p>';
+            $output .= '<p><strong>' . __('Prix:', 'menudujour') . '</strong> ' . esc_html($menu['prix']) . ' ' . esc_html($currency) . '</p>';
             $output .= '</div></div>';
         }
 
@@ -130,26 +139,6 @@ class Menu_Du_Jour {
         $output .= '</div>';
         
         return $output;
-    }
-
-    private function determine_menu_type($menu) {
-        $today = new DateTime();
-        $start_date = isset($menu['date_start']) ? new DateTime($menu['date_start']) : null;
-        $end_date = isset($menu['date_end']) ? new DateTime($menu['date_end']) : null;
-
-        if (!$start_date) {
-            return 'unknown';
-        }
-
-        if ($start_date == $today) {
-            return 'daily';
-        } elseif ($start_date > $today) {
-            return 'upcoming';
-        } elseif ($end_date && $end_date >= $today) {
-            return 'weekly';
-        } else {
-            return 'past';
-        }
     }
 
     public function enqueue_admin_scripts($hook) {
@@ -219,8 +208,8 @@ class Menu_Du_Jour {
 
     public function add_admin_menu() {
         add_menu_page(
-            'Réglages Menu du Jour', // Titre de la page
-            'Menu du Jour', // Titre dans le menu
+            __('Réglages Menu du Jour', 'menudujour'), // Titre de la page
+            __('Menu du Jour', 'menudujour'), // Titre dans le menu
             'manage_options', // Capacité requise
             'menu-du-jour-settings', // Slug du menu
             array($this, 'settings_page'), // Fonction pour afficher la page
@@ -230,155 +219,201 @@ class Menu_Du_Jour {
     }
 
     public function register_settings() {
-        register_setting('mdj_settings', 'mdj_default_restaurant_id');
-        register_setting('mdj_settings', 'mdj_style_choice');
-        register_setting('mdj_settings', 'mdj_date_format');
-        register_setting('mdj_settings', 'mdj_show_title');
-        register_setting('mdj_settings', 'mdj_currency'); // Enregistrement de la devise
+        register_setting('mdj_settings', 'mdj_default_restaurant_id', array($this, 'sanitize_restaurant_id'));
+        register_setting('mdj_settings', 'mdj_style_choice', array($this, 'sanitize_style_choice'));
+        register_setting('mdj_settings', 'mdj_date_format', array($this, 'sanitize_date_format'));
+        register_setting('mdj_settings', 'mdj_show_title', array($this, 'sanitize_show_title'));
+        register_setting('mdj_settings', 'mdj_currency', array($this, 'sanitize_currency')); // Enregistrement de la devise
+    }
+
+    public function sanitize_restaurant_id($input) {
+        return sanitize_text_field($input);
+    }
+
+    public function sanitize_style_choice($input) {
+        $valid_choices = array('default', 'elegant', 'modern', 'rustic', 'minimalist', 'interactive', 'dark', 'colorful', 'minimalist-pro', 'retro', 'futuristic', 'accordion', 'carousel', 'fadein');
+        if (in_array($input, $valid_choices)) {
+            return $input;
+        } else {
+            return 'default';
+        }
+    }
+
+    public function sanitize_date_format($input) {
+        $valid_formats = array(
+            'd/m/Y', 'd.m.Y', 'd-m-Y', 'j F Y', 'F j, Y', 'j M Y', 'D j M Y', 'l j F Y', 'Y-m-d', 'Y.m.d',
+            'd/m/y', 'd.m.y', 'j/n/Y', 'j.n.Y', 'j/n/y', 'j.n.y', 'd F Y', 'l d F Y', 'D d F Y', 'Y F j',
+            'j. F Y', 'j. M Y', 'j. M. Y', 'W/Y', 'W/y'
+        );
+        if (in_array($input, $valid_formats)) {
+            return $input;
+        } else {
+            return 'd/m/Y';
+        }
+    }
+
+    public function sanitize_show_title($input) {
+        $valid_values = array('yes', 'no');
+        if (in_array($input, $valid_values)) {
+            return $input;
+        } else {
+            return 'yes';
+        }
+    }
+
+    public function sanitize_currency($input) {
+        $valid_currencies = array('CHF', '€', '$');
+        if (in_array($input, $valid_currencies)) {
+            return $input;
+        } else {
+            return 'CHF';
+        }
     }
 
     public function settings_page() {
         ?>
         <div class="wrap">
-            <h1><span class="dashicons dashicons-food" style="font-size: 30px; vertical-align: text-center; margin-right: 10px;"></span> Réglages Menu du Jour</h1>
+            <h1><span class="dashicons dashicons-food" style="font-size: 30px; vertical-align: text-center; margin-right: 10px;"></span> <?php _e('Réglages Menu du Jour', 'menudujour'); ?></h1>
 
             <div class="notice notice-info">
-                <p>Utilisez le shortcode <code>[golunch_menus]</code> pour afficher les menus sur vos pages ou articles.</p>
+                <p><?php _e('Utilisez le shortcode', 'menudujour'); ?> <code>[golunch_menus]</code> <?php _e('pour afficher les menus sur vos pages ou articles.', 'menudujour'); ?></p>
             </div>
+            <h3><?php _e('Réglages', 'menudujour'); ?></h3>
             
-            <form method="post" action="options.php">
-                <?php
-                settings_fields('mdj_settings');
-                do_settings_sections('mdj_settings');
-                ?>
-                <table class="form-table">
-                    <tr valign="top">
-                        <th scope="row">ID du restaurant par défaut</th>
-                        <td>
-                            <input type="text" name="mdj_default_restaurant_id" value="<?php echo esc_attr(get_option('mdj_default_restaurant_id')); ?>" />
-                            <p class="description">Entrez l'ID du restaurant GoLunch par défaut.</p>
-                        </td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row">Style d'affichage</th>
-                        <td>
-                            <select name="mdj_style_choice" id="mdj_style_choice">
-                                <?php
-                                $styles = array(
-                                    'default' => 'Par défaut',
-                                    'elegant' => 'Élégant',
-                                    'modern' => 'Moderne',
-                                    'rustic' => 'Rustique',
-                                    'minimalist' => 'Minimaliste',
-                                    'interactive' => 'Interactif',
-                                    'dark' => 'Sombre',
-                                    'colorful' => 'Coloré',
-                                    'minimalist-pro' => 'Minimaliste Pro',
-                                    'retro' => 'Rétro',
-                                    'futuristic' => 'Futuriste',
-                                    'accordion' => 'Accordéon',
-                                    'carousel' => 'Carrousel',
-                                    'fadein' => 'Fade-in'
-                                );
-                                $current_style = get_option('mdj_style_choice', 'default');
-                                foreach ($styles as $value => $label) {
-                                    echo '<option value="' . esc_attr($value) . '" ' . selected($current_style, $value, false) . '>' . esc_html($label) . '</option>';
-                                }
-                                ?>
-                            </select>
-                            <p class="description">Choisissez le style d'affichage pour vos menus.</p>
-                        </td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row">Format de date</th>
-                        <td>
-                            <select name="mdj_date_format" id="mdj_date_format">
-                                <?php
-                                $date_formats = array(
-                                    'd/m/Y' => 'JJ/MM/AAAA (',
-                                    'd.m.Y' => 'JJ.MM.AAAA (',
-                                    'd-m-Y' => 'JJ-MM-AAAA (',
-                                    'j F Y' => 'J Mois AAAA (',
-                                    'F j, Y' => 'Mois J, AAAA (',
-                                    'j M Y' => 'J Mois AAAA abrégé (',
-                                    'D j M Y' => 'Jour J Mois AAAA (',
-                                    'l j F Y' => 'Jour J Mois AAAA complet (',
-                                    'Y-m-d' => 'AAAA-MM-JJ (',
-                                    'Y.m.d' => 'AAAA.MM.JJ (',
-                                    'd/m/y' => 'JJ/MM/AA (',
-                                    'd.m.y' => 'JJ.MM.AA (',
-                                    'j/n/Y' => 'J/M/AAAA sans zéros (',
-                                    'j.n.Y' => 'J.M.AAAA sans zéros (',
-                                    'j/n/y' => 'J/M/AA sans zéros (',
-                                    'j.n.y' => 'J.M.AA sans zéros (',
-                                    'd F Y' => 'JJ Mois AAAA (',
-                                    'l d F Y' => 'Jour JJ Mois AAAA (',
-                                    'D d F Y' => 'Jour JJ Mois AAAA abrégé (',
-                                    'Y F j' => 'AAAA Mois J (',
-                                    'j. F Y' => 'J. Mois AAAA (',
-                                    'j. M Y' => 'J. Mois AAAA abrégé (',
-                                    'j. M. Y' => 'J. Mois. AAAA abrégé (',
-                                    'W/Y' => 'Semaine/AAAA (',
-                                    'W/y' => 'Semaine/AA (',
-                                );
-                                $current_format = get_option('mdj_date_format', 'd/m/Y');
-                                $current_timestamp = current_time('timestamp'); // Obtenir l'horodatage actuel selon WordPress
+            <div style="display: flex; justify-content: space-between;">
+                <form method="post" action="options.php" style="flex: 1; margin-right: 20px;">
+                    <?php
+                    settings_fields('mdj_settings');
+                    do_settings_sections('mdj_settings');
+                    ?>
+                    <table class="form-table">
+                        <tr valign="top">
+                            <th scope="row"><?php _e('ID du restaurant par défaut', 'menudujour'); ?></th>
+                            <td>
+                                <input type="text" name="mdj_default_restaurant_id" value="<?php echo esc_attr(get_option('mdj_default_restaurant_id')); ?>" />
+                                <p class="description"><?php _e('Entrez l\'ID du restaurant GoLunch par défaut.', 'menudujour'); ?></p>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <th scope="row"><?php _e('Style d\'affichage', 'menudujour'); ?></th>
+                            <td>
+                                <select name="mdj_style_choice" id="mdj_style_choice">
+                                    <?php
+                                    $styles = array(
+                                        'default' => __('Par défaut', 'menudujour'),
+                                        'elegant' => __('Élégant', 'menudujour'),
+                                        'modern' => __('Moderne', 'menudujour'),
+                                        'rustic' => __('Rustique', 'menudujour'),
+                                        'minimalist' => __('Minimaliste', 'menudujour'),
+                                        'interactive' => __('Interactif', 'menudujour'),
+                                        'dark' => __('Sombre', 'menudujour'),
+                                        'colorful' => __('Coloré', 'menudujour'),
+                                        'minimalist-pro' => __('Minimaliste Pro', 'menudujour'),
+                                        'retro' => __('Rétro', 'menudujour'),
+                                        'futuristic' => __('Futuriste', 'menudujour'),
+                                        'accordion' => __('Accordéon', 'menudujour'),
+                                        'carousel' => __('Carrousel', 'menudujour'),
+                                        'fadein' => __('Fade-in', 'menudujour')
+                                    );
+                                    $current_style = get_option('mdj_style_choice', 'default');
+                                    foreach ($styles as $value => $label) {
+                                        echo '<option value="' . esc_attr($value) . '" ' . selected($current_style, $value, false) . '>' . esc_html($label) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                                <p class="description"><?php _e('Choisissez le style d\'affichage pour vos menus.', 'menudujour'); ?></p>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <th scope="row"><?php _e('Format de date', 'menudujour'); ?></th>
+                            <td>
+                                <select name="mdj_date_format" id="mdj_date_format">
+                                    <?php
+                                    $date_formats = array(
+                                        'd/m/Y' => __('JJ/MM/AAAA', 'menudujour'),
+                                        'd.m.Y' => __('JJ.MM.AAAA', 'menudujour'),
+                                        'd-m-Y' => __('JJ-MM-AAAA', 'menudujour'),
+                                        'j F Y' => __('J Mois AAAA', 'menudujour'),
+                                        'F j, Y' => __('Mois J, AAAA', 'menudujour'),
+                                        'j M Y' => __('J Mois AAAA abrégé', 'menudujour'),
+                                        'D j M Y' => __('Jour J Mois AAAA', 'menudujour'),
+                                        'l j F Y' => __('Jour J Mois AAAA complet', 'menudujour'),
+                                        'Y-m-d' => __('AAAA-MM-JJ', 'menudujour'),
+                                        'Y.m.d' => __('AAAA.MM.JJ', 'menudujour'),
+                                        'd/m/y' => __('JJ/MM/AA', 'menudujour'),
+                                        'd.m.y' => __('JJ.MM.AA', 'menudujour'),
+                                        'j/n/Y' => __('J/M/AAAA sans zéros', 'menudujour'),
+                                        'j.n.Y' => __('J.M.AAAA sans zéros', 'menudujour'),
+                                        'j/n/y' => __('J/M/AA sans zéros', 'menudujour'),
+                                        'j.n.y' => __('J.M.AA sans zéros', 'menudujour'),
+                                        'd F Y' => __('JJ Mois AAAA', 'menudujour'),
+                                        'l d F Y' => __('Jour JJ Mois AAAA', 'menudujour'),
+                                        'D d F Y' => __('Jour JJ Mois AAAA abrégé', 'menudujour'),
+                                        'Y F j' => __('AAAA Mois J', 'menudujour'),
+                                        'j. F Y' => __('J. Mois AAAA', 'menudujour'),
+                                        'j. M Y' => __('J. Mois AAAA abrégé', 'menudujour'),
+                                        'j. M. Y' => __('J. Mois. AAAA abrégé', 'menudujour'),
+                                        'W/Y' => __('Semaine/AAAA', 'menudujour'),
+                                        'W/y' => __('Semaine/AA', 'menudujour'),
+                                    );
+                                    $current_format = get_option('mdj_date_format', 'd/m/Y');
+                                    $current_timestamp = current_time('timestamp'); // Obtenir l'horodatage actuel selon WordPress
 
-                                foreach ($date_formats as $value => $label) {
-                                    // Formater la date actuelle selon le format courant
-                                    $formatted_date = date_i18n($value, $current_timestamp);
-                                    echo '<option value="' . esc_attr($value) . '" ' . selected($current_format, $value, false) . '>' . esc_html($label) . esc_html($formatted_date) . ')</option>';
-                                }
-                                ?>
-                            </select>
-                            <p class="description">Choisissez le format de date pour l'affichage des menus.</p>
-                        </td>
-                    </tr>
+                                    foreach ($date_formats as $value => $label) {
+                                        $formatted_date = date_i18n($value, $current_timestamp);
+                                        echo '<option value="' . esc_attr($value) . '" ' . selected($current_format, $value, false) . '>' . esc_html($label) . ' (' . esc_html($formatted_date) . ')</option>';
+                                    }
+                                    ?>
+                                </select>
+                                <p class="description"><?php _e('Choisissez le format de date pour l\'affichage des menus.', 'menudujour'); ?></p>
+                            </td>
+                        </tr>
 
-                    <tr valign="top">
-                        <th scope="row">Afficher le titre</th>
-                        <td>
-                            <select name="mdj_show_title">
-                                <option value="yes" <?php selected(get_option('mdj_show_title', 'yes'), 'yes'); ?>>Oui</option>
-                                <option value="no" <?php selected(get_option('mdj_show_title', 'yes'), 'no'); ?>>Non</option>
-                            </select>
-                            <p class="description">Choisissez si vous voulez afficher le titre "Menus du ... au ..."</p>
-                        </td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row">Devise</th>
-                        <td>
-                            <select name="mdj_currency" id="mdj_currency">
-                                <?php
-                                $currencies = array(
-                                    'CHF' => 'CHF',
-                                    '€'   => 'Euro (€)',
-                                    '$'   => 'Dollar ($)'
-                                );
-                                $current_currency = get_option('mdj_currency', 'CHF');
-                                foreach ($currencies as $value => $label) {
-                                    echo '<option value="' . esc_attr($value) . '" ' . selected($current_currency, $value, false) . '>' . esc_html($label) . '</option>';
-                                }
-                                ?>
-                            </select>
-                            <p class="description">Choisissez la devise pour l'affichage des prix.</p>
-                        </td>
-                    </tr>
-                </table>
-                
-                <div id="style-preview" style="margin-top: 20px;">
-                    <h3>Aperçu du style</h3>
-                    <div id="preview-content" style="border: 1px solid #ddd; padding: 10px; max-width: 500px;">
+                        <tr valign="top">
+                            <th scope="row"><?php _e('Afficher le titre', 'menudujour'); ?></th>
+                            <td>
+                                <select name="mdj_show_title">
+                                    <option value="yes" <?php selected(get_option('mdj_show_title', 'yes'), 'yes'); ?>><?php _e('Oui', 'menudujour'); ?></option>
+                                    <option value="no" <?php selected(get_option('mdj_show_title', 'yes'), 'no'); ?>><?php _e('Non', 'menudujour'); ?></option>
+                                </select>
+                                <p class="description"><?php _e('Choisissez si vous voulez afficher le titre "Menus du ... au ..."', 'menudujour'); ?></p>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <th scope="row"><?php _e('Devise', 'menudujour'); ?></th>
+                            <td>
+                                <select name="mdj_currency" id="mdj_currency">
+                                    <?php
+                                    $currencies = array(
+                                        'CHF' => __('CHF', 'menudujour'),
+                                        '€'   => __('Euro (€)', 'menudujour'),
+                                        '$'   => __('Dollar ($)', 'menudujour')
+                                    );
+                                    $current_currency = get_option('mdj_currency', 'CHF');
+                                    foreach ($currencies as $value => $label) {
+                                        echo '<option value="' . esc_attr($value) . '" ' . selected($current_currency, $value, false) . '>' . esc_html($label) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                                <p class="description"><?php _e('Choisissez la devise pour l\'affichage des prix.', 'menudujour'); ?></p>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <?php submit_button(__('Enregistrer les modifications', 'menudujour')); ?>
+                </form>
+
+                <div id="style-preview" style="flex: 1; border: 1px solid #ddd; padding: 10px; max-width: 500px;">
+                    <h3><?php _e('Aperçu du style', 'menudujour'); ?></h3>
+                    <div id="preview-content">
                         <!-- Le contenu de l'aperçu sera chargé ici via JavaScript -->
                     </div>
                 </div>
-                
-                <?php submit_button('Enregistrer les modifications'); ?>
-            </form>
+            </div>
         </div>
 
         <?php
     }
 }
 
-$menu_du_jour = new Menu_Du_Jour();
+$mdj_menu_du_jour = new MDJ_Menu_Du_Jour();
