@@ -16,6 +16,7 @@ class Menu_Du_Jour {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_init', array($this, 'register_settings'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
     }
 
     public function get_menus($restaurant_id) {
@@ -98,7 +99,7 @@ class Menu_Du_Jour {
                 $current_week_end = $week_end;
 
                 $output .= '<div class="golunch-week">';
-                $output .= '<h2>Menus de la semaine du ' . date_i18n($date_format, strtotime($week_start)) . 
+                $output .= '<h2>Menus du ' . date_i18n($date_format, strtotime($week_start)) . 
                            ' au ' . date_i18n($date_format, strtotime($week_end)) . '</h2>';
             }
 
@@ -144,6 +145,19 @@ class Menu_Du_Jour {
         } else {
             return 'past';
         }
+    }
+
+    public function enqueue_admin_scripts($hook) {
+        if ($hook !== 'toplevel_page_menu-du-jour-settings') {
+            return;
+        }
+
+        wp_enqueue_script('mdj-admin-script', plugins_url('js/mdj-admin-script.js', __FILE__), array('jquery'), null, true);
+
+        // Passer l'URL de base du plugin à JavaScript
+        wp_localize_script('mdj-admin-script', 'mdj_ajax_object', array(
+            'plugin_url' => plugins_url('', __FILE__),
+        ));
     }
 
     public function enqueue_styles() {
@@ -322,55 +336,6 @@ class Menu_Du_Jour {
             </form>
         </div>
 
-        <script>
-        jQuery(document).ready(function($) {
-            function updatePreview() {
-                var selectedStyle = $('#mdj_style_choice').val();
-                var previewContent = $('#preview-content');
-                
-                var dateFormat = $('#mdj_date_format').val();
-                var currentDate = new Date();
-                var formattedDate = $.datepicker.formatDate(dateFormat, currentDate);
-                
-                var menuHtml = '<div class="golunch-menus golunch-' + selectedStyle + '">' +
-                    '<div class="golunch-menu">' +
-                    '<h3>Menu du ' + formattedDate + '</h3>' +
-                    '<div class="golunch-menu-content">' +
-                    '<p><strong>Entrée:</strong> Salade César</p>' +
-                    '<p><strong>Plat:</strong> Steak frites</p>' +
-                    '<p><strong>Dessert:</strong> Tarte aux pommes</p>' +
-                    '<p><strong>Prix:</strong> 25 CHF</p>' +
-                    '</div></div></div>';
-                
-                previewContent.html(menuHtml);
-                
-                // Charger le CSS correspondant
-                $('head').find('link[id^="golunch-preview-"]').remove();
-                $('<link>')
-                    .attr({
-                        id: 'golunch-preview-' + selectedStyle + '-styles',
-                        rel: 'stylesheet',
-                        type: 'text/css',
-                        href: '<?php echo plugins_url('styles/golunch-' + selectedStyle + '-styles.css', __FILE__); ?>'
-                    })
-                    .appendTo('head');
-                
-                // Charger le script JS si nécessaire
-                if (['interactive', 'accordion', 'carousel', 'fadein'].includes(selectedStyle)) {
-                    $.getScript('<?php echo plugins_url('js/golunch-' + selectedStyle + '-script.js', __FILE__); ?>')
-                        .done(function() {
-                            console.log(selectedStyle + ' script loaded successfully');
-                        })
-                        .fail(function(jqxhr, settings, exception) {
-                            console.log('Failed to load ' + selectedStyle + ' script: ' + exception);
-                        });
-                }
-            }
-            
-            $('#mdj_style_choice, #mdj_date_format').change(updatePreview);
-            updatePreview(); // Appeler au chargement initial
-        });
-        </script>
         <?php
     }
 }
